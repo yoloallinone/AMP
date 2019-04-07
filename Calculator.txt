@@ -1,0 +1,158 @@
+MainActivity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calculator"
+            android:textSize="30sp"
+            android:textColor="@android:color/black"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:id="@+id/calculator"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/calculator"
+            android:hint="Enter your first number: "
+            android:inputType="number"
+            android:id="@+id/first"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/first"
+            android:hint="Enter your second number: "
+            android:inputType="number"
+            android:id="@+id/second"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/second"
+            android:hint="Result: "
+            android:inputType="number"
+            android:id="@+id/result"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:layout_below="@id/result"
+            android:layout_margin="20dp"
+            android:id="@+id/add"
+            android:onClick="add"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:layout_below="@id/result"
+            android:layout_toRightOf="@id/add"
+            android:layout_margin="20dp"
+            android:id="@+id/subtract"
+            android:onClick="subtraction"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*"
+            android:layout_below="@id/result"
+            android:layout_toRightOf="@id/subtract"
+            android:layout_margin="20dp"
+            android:id="@+id/multiply"
+            android:onClick="multiplication"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/"
+            android:layout_below="@id/subtract"
+            android:layout_margin="20dp"
+            android:id="@+id/divide"
+            android:onClick="division"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="%"
+            android:layout_below="@id/subtract"
+            android:layout_toRightOf="@id/divide"
+            android:layout_margin="20dp"
+            android:id="@+id/modulus"
+            android:onClick="mod"/>
+<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Krishna"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:layout_margin="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
+</RelativeLayout>
+MainActivity.kt
+package com.example.calculator
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import kotlinx.android.synthetic.main.activity_main.*
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+    fun add (view : View)
+    {
+        val edittext1 = findViewById<EditText>(R.id.first)
+        val number1 = edittext1.text.toString().toInt()
+        val edittext2 = findViewById<EditText>(R.id.second)
+        val number2 = edittext2.text.toString().toInt()
+        val addition = number1 + number2
+        val result = findViewById<EditText>(R.id.result)
+        result.setText("" + addition)
+    }
+    fun subtraction (view : View)
+    {
+        val edittext1 = findViewById<EditText>(R.id.first)
+        val number1 = edittext1.text.toString().toInt()
+        val edittext2 = findViewById<EditText>(R.id.second)
+        val number2 = edittext2.text.toString().toInt()
+        val subtraction = number1 - number2
+        val result = findViewById<EditText>(R.id.result)
+        result.setText("" + subtraction)
+    }
+
+    fun multiplication (view : View)
+    {
+        val edittext1 = findViewById<EditText>(R.id.first)
+        val number1 = edittext1.text.toString().toInt()
+        val edittext2 = findViewById<EditText>(R.id.second)
+        val number2 = edittext2.text.toString().toInt()
+        val multiplication = number1 * number2
+        val result = findViewById<EditText>(R.id.result)
+        result.setText("" + multiplication)
+    }
+    fun division (view : View)
+    {
+        val edittext1 = findViewById<EditText>(R.id.first)
+        val number1 = edittext1.text.toString().toInt()
+        val edittext2 = findViewById<EditText>(R.id.second)
+        val number2 = edittext2.text.toString().toInt()
+        val division = number1 / number2
+        val result = findViewById<EditText>(R.id.result)
+        result.setText("" + division)
+    }
+    fun mod (view : View)
+    {
+        val edittext1 = findViewById<EditText>(R.id.first)
+        val number1 = edittext1.text.toString().toInt()
+        val edittext2 = findViewById<EditText>(R.id.second)
+        val number2 = edittext2.text.toString().toInt()
+        val mod = number1 % number2
+        val result = findViewById<EditText>(R.id.result)
+        result.setText("" + mod)
+    }
+}
+

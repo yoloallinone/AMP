@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView1"
+            android:textSize="32sp"
+            android:text="Click Below Krishna!!"
+            android:layout_marginBottom="10dp"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Alert Dialog"
+            android:id="@+id/buttonID"
+            android:textSize="20sp"
+            android:layout_below="@id/textView1"
+            android:layout_marginBottom="10dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your colours are: "
+            android:textSize="32sp"
+            android:layout_below="@id/buttonID"
+            android:id="@+id/textView"/>
+
+</RelativeLayout>
+
+
+
+
+
+
+package com.example.multichoicealert
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v7.app.AlertDialog
+import android.widget.TextView
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val mSlctdTxtTv = findViewById<TextView>(R.id.textView)
+        buttonID.setOnClickListener {
+            val builder = AlertDialog.Builder(this@MainActivity)
+            // String array for alert dialog multi choice items
+            val colorsArray = arrayOf("Krishna", "Rahul", "Arusha", "Nikhil", "Salot", "Dhvani")
+            // Boolean array for initial selected items
+            val checkedColorsArray = booleanArrayOf(true, // Black checked
+                false, // Orange
+                false, // Green
+                true, // Yellow checked
+                false, // White
+                false  //Purple
+            )
+            // Convert the color array to list
+            val colorsList = Arrays.asList(*colorsArray)
+            //setTitle
+            builder.setTitle("Select colors")
+            //set multichoice
+            builder.setMultiChoiceItems(colorsArray, checkedColorsArray) { dialog, which, isChecked ->
+                // Update the current focused item's checked status
+                checkedColorsArray[which] = isChecked
+                // Get the current focused item
+                val currentItem = colorsList[which]
+                // Notify the current action
+                Toast.makeText(applicationContext, currentItem + " " + isChecked, Toast.LENGTH_SHORT).show()
+            }
+            // Set the positive/yes button click listener
+            builder.setPositiveButton("OK") { dialog, which ->
+                // Do something when click positive button
+                mSlctdTxtTv.text = "Your preferred colors..... \n"
+                for (i in checkedColorsArray.indices) {
+                    val checked = checkedColorsArray[i]
+                    if (checked) {
+                        mSlctdTxtTv.text = mSlctdTxtTv.text.toString() + colorsList[i] + "\n"
+                    }
+                }
+            }
+            // Set the neutral/cancel button click listener
+            builder.setNeutralButton("Cancel") { dialog, which ->
+                // Do something when click the neutral button
+            }
+            val dialog = builder.create()
+            // Display the alert dialog on interface
+            dialog.show()
+        }
+
+    }
+}
+
+
+
+
+
+
+

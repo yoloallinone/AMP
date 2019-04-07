@@ -1,0 +1,57 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+
+    <Button
+            android:text="Send Notifcation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteY="341dp"
+            tools:layout_editor_absoluteX="183dp"
+            android:id="@+id/buttonNotify"/>
+</LinearLayout>
+
+
+
+
+package com.maurya.notification19
+
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+
+class MainActivity : AppCompatActivity() {
+    lateinit var btn:Button
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        btn=findViewById(R.id.buttonNotify)
+        btn.setOnClickListener{
+            val intent= Intent()
+            val pendingIntent=PendingIntent.getActivity(this@MainActivity,0,intent,0)
+            val notification =Notification.Builder(this@MainActivity)
+                .setSmallIcon(R.drawable.notification_icon_background)
+                .setContentTitle("Notification Example")
+                .setContentText("Hi Showing you the Notification")
+            notification.setContentIntent(pendingIntent)
+
+            val notificanManager=getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificanManager.notify(0,notification.build())
+
+        }
+
+    }
+}

@@ -1,0 +1,80 @@
+mainActivity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Launch Broadcast"
+            android:textSize="25sp"
+            android:textColor="@android:color/background_light"
+            android:background="@color/colorAccent"
+            android:padding="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true" android:layout_marginTop="199dp" android:id="@+id/btn"/>
+
+</RelativeLayout>
+MainActivity.kt
+package com.example.admin.broadcastreceiveryashpractical1
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+class MainActivity : AppCompatActivity() {
+    lateinit var  receiver : BroadcastReceiver
+    lateinit var  context: Context
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        context = this
+
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_POWER_CONNECTED)
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED)
+        receiver = object:BroadcastReceiver(){
+            override fun onReceive(context: Context?, intent: Intent?) {
+                Toast.makeText(context,intent?.action,Toast.LENGTH_LONG).show()
+            }
+
+        }
+        registerReceiver(receiver, filter)
+        btn.setOnClickListener {
+            sendBroadcast(Intent(context,MyReceiver::class.java))
+        }
+    }
+    override fun onDestroy() {
+
+        unregisterReceiver(receiver)
+        super.onDestroy()
+    }
+}
+MyReceiver.kt
+package com.example.admin.broadcastreceiveryashpractical1
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+
+class MyReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        // This method is called when the BroadcastReceiver is receiving an Intent broadcast.
+
+        Toast.makeText(context,"16" , Toast.LENGTH_LONG).show();
+    }
+}

@@ -1,0 +1,87 @@
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dhrumil"
+            android:textSize="24sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+    <TextView
+            android:id="@+id/name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Service Click Started"
+            android:textSize="24sp"
+            android:layout_below="@+id/name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+    <Button
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Service Start"
+            android:textSize="18sp"
+            android:layout_below="@+id/name1"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:onClick="startservices"
+    <Button
+            android:id="@+id/below"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Service Stop"
+            android:textSize="18sp"
+            android:layout_below="@+id/start"
+            android:layout_marginTop="100dp"
+            android:layout_centerHorizontal="true"
+            android:onClick="stopservice"
+    />
+</RelativeLayout>
+MainActivity.kt
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+class MainActivity : AppCompatActivity() {
+    var msg = "ANDROID"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        Log.d(msg,"On Create Event")
+    }
+    fun startservices (view: View){
+        startService(Intent(baseContext, MyService::class.java))
+    }
+    fun stopservice (view: View){
+        stopService(Intent(baseContext, MyService::class.java))
+    }}
+MyService.kt
+package com.example.admin.serviceyash
+
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.widget.Toast
+class MyService : Service(){
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Toast.makeText(applicationContext, "Service Started", Toast.LENGTH_LONG).show()
+        return START_STICKY
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Toast.makeText(applicationContext, "Service Destroyed", Toast.LENGTH_LONG).show()
+
+    }}

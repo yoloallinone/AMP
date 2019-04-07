@@ -1,0 +1,73 @@
+mainActivity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+
+
+    <Button
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Submit"
+    android:textAppearance="?android:textAppearanceLarge"
+    android:padding="10dp"
+    android:id="@+id/Submit_btn"/>
+
+</LinearLayout>
+
+SecondActivity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF71B1EA"
+        tools:context=".SecondActivity">
+
+        <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome 16!"
+        android:gravity="center_vertical|center"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:id="@+id/newText"
+        />
+</android.support.constraint.ConstraintLayout>
+
+MainActivity.kt
+package com.example.admin.practical1
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        Submit_btn.setOnClickListener {
+            Toast.makeText(this,"Entered 2nd page",Toast.LENGTH_LONG).show();
+            val intent=Intent(this,SecondActivity::class.java);
+            startActivity(intent);}}}
+SecondActivity.kt
+package com.example.admin.practical1
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+
+class SecondActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_second)
+    }
+}

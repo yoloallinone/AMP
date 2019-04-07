@@ -1,0 +1,49 @@
+MainActivity.xml
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/action_dial_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Action Dialing"
+            android:textSize="16dp"
+            android:padding="10dp"
+    />
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
+MainActivity.kt
+package com.example.admin.call
+
+import android.content.Intent
+import android.net.Uri
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val phonenumber="53003160016"
+
+        action_dial_button.setOnClickListener {
+            val intent= Intent(Intent.ACTION_DIAL)
+            intent.data= Uri.parse("tel:"+phonenumber)
+            startActivity(intent)
+        }
+    }
+}
+
