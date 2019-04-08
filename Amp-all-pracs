@@ -1,0 +1,2148 @@
+/*
+-- Activity Life Cycle -- 
+class MainActivity: AppCompactActivity(){
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+	}
+	
+	override fun onStart() {
+        super.onStart()
+        Log.d("Activity State = ", "onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Activity State = ", "onResume()")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Activity State = ", "onPause()")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("Activity State = ","onStop()")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("Activity State = ", "onRestart()")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("Activity State = ", "onDestroy()")
+    }
+}
+
+
+
+-- Multiple Activities --
+- MainActivity.kt
+class MainActivity: AppCompactActivity(){
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+		
+		button1.setOnClickListener {
+            val secondIntent = Intent(this, SecondActivity::class.java)
+			
+			//sending data
+            secondIntent.putExtra("username", "hello")
+            secondIntent.putExtra("password", "world")
+            startActivity(secondIntent)
+        }
+		
+	}
+}
+
+- SecondActivity.kt
+class SecondActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_second)
+
+		//receiving data
+        val username = intent.getStringExtra("username")
+        val password = intent.getStringExtra("password")
+
+        button2.setOnClickListener {
+            textView2.text = username + "/" + password
+			
+			//sending data back
+            val firstIntent = Intent(this, MainActivity::class.java)
+            firstIntent.putExtra("data", "abd")
+            startActivity(firstIntent)
+        }
+    }
+}
+
+
+
+-- Multiple Fragments --
+- FragmentOne.kt
+class FragmentOne : Fragment() {
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+	
+        return inflater.inflate(R.layout.fragment_fragment_one, container, false)
+    }
+}
+
+- FragmentTwo.kt
+class FragmentTwo : Fragment() {
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+	
+        return inflater.inflate(R.layout.fragment_fragment_two, container, false)
+    }
+}
+// add <fragment> in xml
+
+
+
+-- Multiple Fragments Book Example -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity(), Coordinator {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+
+    override fun onBookChanged(index:Int) {
+        val frag = fragmentbookdescription
+        if (frag is BookDescription) {
+            frag.changeDescription(index)
+        }
+    }
+}
+
+- BookTitle.kt
+class BookTitle : Fragment(), View.OnClickListener {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val v = inflater.inflate(R.layout.book_titles, container, false)
+        return v
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        rlas3.setOnClickListener(this)
+        rlas3kotlin.setOnClickListener(this)
+        rminandroid.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        var index:Int = 0
+        when(v?.id) {
+            R.id.rlas3 -> {
+                index = 0
+            }
+            R.id.rlas3kotlin -> {
+                index = 1
+            }
+            R.id.rminandroid -> {
+                index = 2
+            }
+        }
+        val activity = getActivity()
+        if (activity is Coordinator) {
+            activity.onBookChanged(index)
+        }
+    }
+}
+
+-BookDescription.kt
+class BookDescription : Fragment() {
+    private lateinit var arrbookdesc: Array<String>
+    var bookindex = 0
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val v = inflater.inflate(R.layout.book_description, container, false)
+        arrbookdesc = resources.getStringArray(R.array.bookdescriptions)
+        return v
+    }
+    fun changeDescription(index:Int) : Unit {
+        bookindex = index
+        txtdescription?.text = arrbookdesc[bookindex]
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        changeDescription(bookindex)
+    }
+}
+
+- bookdescription.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bookdescriptions">
+        <item>
+            How to use Android Studio 3, but also teaches you how basic
+            Android programming. And hey, in case you are also a beginner in Java,
+            that is covered too.
+        </item>
+        <item>
+            This book is also about how to use Android Studio. Like the first one,
+            it also teaches you the basics of the IDE and Android programming; but
+            this time around, you will use Kotlin. The newest kid in the JVM block
+        </item>
+        <item>
+            Minimum Android Programming is the book that got me started. I wrote
+            in an age when even the Eclipse ADT does not exist yet. So, this means
+            you will use the Android SDK in all the glory of the CLI tools
+        </item>
+    </string-array>
+</resources>
+
+- book_titles.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="28dp" android:layout_marginEnd="28dp">
+
+        <RadioButton
+                android:id="@+id/rlas3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Learn Android Studio 3"
+                android:textSize="18sp"/>
+
+        <RadioButton
+                android:id="@+id/rlas3kotlin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Learn Android Studio 3 with Kotlin"
+                android:textSize="18sp"/>
+
+        <RadioButton
+                android:id="@+id/rminandroid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Minimum Android Programming"
+                android:textSize="18sp"/>
+
+    </RadioGroup>
+</android.support.constraint.ConstraintLayout>
+
+- book_description.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <TextView
+            android:id="@+id/txtdescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="24sp" />
+
+</LinearLayout>
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <TextView
+            android:id="@+id/txtdescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="24sp" />
+
+</LinearLayout>
+
+- land/activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        tools:context=".MainActivity">
+
+    <fragment
+            android:layout_width="0px"
+            android:layout_height="match_parent" android:layout_weight="1" android:name="com.example.p3bdemo.BookTitle"
+            android:id="@+id/fragmentbooktitle"/>
+    <fragment
+            android:layout_width="0px"
+            android:layout_height="match_parent" android:layout_weight="1" android:name="com.example.p3bdemo.BookDescription"
+            android:id="@+id/fragmentbookdescription"/>
+</LinearLayout>
+
+
+
+-- AppBar --
+- menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_settings"
+          android:title="Settings"
+          app:showAsAction="never"/>
+    <item android:id="@+id/action_mail"
+          app:showAsAction="never"
+          android:title="Send Mail">
+        <menu>
+            <item android:id="@+id/action_gmail"
+                  android:title="Gmail"/>
+
+            <item android:id="@+id/action_yahoo"
+                  android:title="Yahoo"/>
+        </menu>
+    </item>
+</menu>
+
+- styles.xml
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>
+
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        setSupportActionBar(toolbar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+        R.id.action_settings -> {
+            Toast.makeText(this, "Settings Selected", LENGTH_LONG).show()
+            true
+        }
+        R.id.action_gmail -> {
+            Toast.makeText(this, "Gmail Selected", LENGTH_LONG).show()
+            true
+        }
+        R.id.action_yahoo -> {
+            Toast.makeText(this, "Yahoo Selected", LENGTH_LONG).show()
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
+    }
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:theme="?attr/actionBarTheme"
+            android:minHeight="?attr/actionBarSize"
+            tools:layout_editor_absoluteX="8dp" android:id="@+id/toolbar" app:layout_constraintTop_toTopOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
+
+- For implementing back arrow in AppBar
+1. Add to onCreate of all activities - supportActionBar?.setDisplayHomeAsUpEnabled(true)
+2. Add to AndroidManifest.xml - <activity android:name=".SecondActivity" android:parentActivityName=".MainActivity"></activity>
+
+
+
+-- Spinner -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() ,AdapterView.OnItemSelectedListener {
+
+    internal var div = arrayOf("A", "B")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val spin=findViewById(R.id.simplespinner) as Spinner
+        spin.setOnItemSelectedListener(this)
+
+        val aa=ArrayAdapter(this,android.R.layout.simple_spinner_item,div)
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spin.setAdapter(aa)
+
+        butttn.setOnClickListener {
+            Toast.makeText(this,"Submitted",Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onItemSelected(p0: AdapterView<*>, arg1: View, position: Int, id: Long) {
+        Toast.makeText(getApplicationContext(),"Course is: ${div[position]}",Toast.LENGTH_SHORT).show()
+        //Toast.makeText(getApplicationContext,"Time is:",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create your account"
+            android:textSize="25sp"
+            android:textColor="@android:color/black"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:id="@+id/account"/>
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/account"
+            android:hint="Your Name:"
+            android:layout_margin="20dp"
+            android:id="@+id/name"/>
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:layout_margin="20dp"
+            android:hint="Your Mobile:"
+            android:id="@+id/mobile"
+            android:inputType="number"
+            android:maxLength="10"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/choice"
+            android:text="Please choose your hobbies:"
+            android:textColor="@android:color/black"
+            android:layout_below="@id/mobile"
+            android:layout_margin="20dp"
+            android:textSize="20dp"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/choice"
+            android:layout_margin="20dp"
+            android:text="Lawn Tennis"
+            android:textSize="20sp"
+            android:id="@+id/lawnTennis"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/lawnTennis"
+            android:layout_below="@id/choice"
+            android:layout_margin="20dp"
+            android:text="Badminton"
+            android:id="@+id/badminton"
+            android:textSize="20sp"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lawnTennis"
+            android:layout_margin="20dp"
+            android:text="Squash"
+            android:id="@+id/squash"
+            android:textSize="20sp"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/badminton"
+            android:layout_toRightOf="@id/squash"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="70dp"
+            android:text="Swimming"
+            android:id="@+id/swimming"
+            android:textSize="20sp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please choose your gender:"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:layout_below="@id/squash"
+            android:layout_margin="20dp"
+            android:id="@+id/gender"/>
+
+    <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/gender">
+
+        <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/male"
+                android:layout_margin="20dp"
+                android:text="Male"
+                android:textSize="20sp"/>
+
+        <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/female"
+                android:layout_marginLeft="20dp"
+                android:text="Female"
+                android:textSize="20sp"/>
+
+    </RadioGroup>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/signup"
+            android:text="Register"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"/>
+
+</RelativeLayout>
+
+
+
+-- Grid View Images -- 
+- image_entry.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="150dp"
+              android:layout_height="wrap_content" xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="#ddd"
+              android:gravity="center"
+              android:orientation="vertical"
+              android:padding="15dp">
+
+    <ImageView
+            android:id="@+id/ivImage"
+            android:layout_width="150dp"
+            android:layout_height="120dp"
+            app:srcCompat="@drawable/trackball1" />
+
+    <TextView
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp" />
+
+</LinearLayout>
+
+- myimage.kt
+package com.example.practical4f
+
+class myimage {
+    var name: String? = null
+    var image: Int? = null
+
+    constructor(name: String, image: Int) {
+        this.name = name
+        this.image = image
+    }
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <GridView
+            android:id="@+id/gvImages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnWidth="150dp"
+            android:horizontalSpacing="15dp"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="15dp" />
+</android.support.constraint.ConstraintLayout>
+
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    var adapter: myImageAdapter? = null
+    var myImageList = ArrayList<myimage>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // load images
+        myImageList.add(myimage("Trackball1",R.drawable.trackball1))
+        myImageList.add(myimage("Trackball2",R.drawable.trackball1))
+        myImageList.add(myimage("Trackball3",R.drawable.trackball1))
+        myImageList.add(myimage("Trackball4",R.drawable.trackball1))
+        myImageList.add(myimage("Trackball5",R.drawable.trackball1))
+        myImageList.add(myimage("Trackball6",R.drawable.trackball1))
+        adapter = myImageAdapter(this, myImageList)
+
+        gvImages.adapter = adapter
+    }
+
+    class myImageAdapter : BaseAdapter {
+        var myImageList = ArrayList<myimage>()
+        var context: Context? = null
+
+        constructor(context: Context, myImageList: ArrayList<myimage>) : super() {
+            this.context = context
+            this.myImageList = myImageList
+        }
+
+        override fun getCount(): Int {
+            return myImageList.size
+        }
+
+        override fun getItem(position: Int): Any {
+            return myImageList[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val imgPhoto = this.myImageList[position]
+
+            var inflator = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            var imageView = inflator.inflate(R.layout.image_entry, null)
+            imageView.ivImage.setImageResource(imgPhoto.image!!)
+            imageView.tvName.text = imgPhoto.name!!
+
+            return imageView
+        }
+    }
+}
+
+
+
+
+-- Grid View Java -- 
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Get the widgets reference from XML layout
+        GridView gv = (GridView) findViewById(R.id.gv);
+        final TextView tv = (TextView) findViewById(R.id.tv);
+
+        String[] plants = new String[]{
+                "Striped alder",
+                "Amy root",
+                "Arizona sycamore",
+                "Green ash",
+                "Cherry birch",
+                "Gray birch",
+                "Mahogany birch",
+                "Spice birch",
+                "Yellow birch"
+        };
+
+        List<String> plantsList = new ArrayList<String>(Arrays.asList(plants));
+
+        /*
+            setAdapter (ListAdapter adapter)
+                Sets the data behind this GridView.
+
+                Parameters
+                adapter : the adapter providing the grid's data
+         */
+        // Data bind GridView with ArrayAdapter (String Array elements)
+        gv.setAdapter(new ArrayAdapter<String>(
+                this, android.R.layout.simple_list_item_1,plantsList));
+
+        /*
+            setOnItemClickListener (AdapterView.OnItemClickListener listener)
+                Register a callback to be invoked when an item
+                in this AdapterView has been clicked.
+
+                Parameters
+                listener : The callback that will be invoked.
+         */
+        // Set an item click listener for GridView widget
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the GridView selected/clicked item text
+                String selectedItem = parent.getItemAtPosition(position).toString();
+
+                // Display the selected/clicked item text and position on TextView
+                tv.setText("GridView item clicked : " +selectedItem
+                        + "\nAt index position : " + position);
+            }
+        });
+  }
+}
+
+
+
+-- Context Menu --
+- MainActivity.k
+class MainActivity : AppCompatActivity() {
+
+    private var names = arrayOf("C","C++","C#","ASP","Android","Python")
+	
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView (R.layout.activity_main)
+        //simpleList = findViewById(R.id.listView1)
+        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names)
+        listView1 !!. adapter = adapter
+        registerForContextMenu(listView1)
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo) {
+        super.onCreateContextMenu(menu,v,menuInfo)
+        menu.setHeaderTitle ("Take Action")
+        menu.add (0, v.id, 0, "Call Me")
+        menu.add(0, v.id, 0, "Message Me")
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when {
+            item.title === "Call Me" -> Toast.makeText(this, "Calling", Toast.LENGTH_LONG).show()
+            item.title === "Message Me" -> Toast.makeText(this, "Sending sms", Toast.LENGTH_LONG).show()
+            else -> return false
+        }
+        return true
+    }
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <ListView
+            android:layout_width="0dp"
+            android:layout_height="340dp"
+            android:layout_marginTop="8dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+            android:id="@+id/listView1"/>
+
+</android.support.constraint.ConstraintLayout>
+
+
+
+-- Dialog --
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        //Single Choice Dialog
+        val listItems = arrayOf("Mango", "Banana", "Apple")
+        val mBuilder = AlertDialog.Builder(this)
+        mBuilder.setTitle("Choose A Fruit")
+        mBuilder.setSingleChoiceItems(listItems, -1) { dialogInterface, i ->
+            textView.text = listItems[i]
+            dialogInterface.dismiss()
+        }
+        mBuilder.setNeutralButton("cancel"){ dialog, which ->
+            dialog.cancel()
+        }
+        var mDialog = mBuilder.create()
+
+        button.setOnClickListener {
+            mDialog.show()
+        }
+
+        //Multi Choice Dialog
+        val checkedListItems = booleanArrayOf(false, false, false)
+        val mbuilder2 = AlertDialog.Builder(this)
+        mbuilder2.setTitle("Choose Fruits")
+        mbuilder2.setMultiChoiceItems(listItems, checkedListItems) { dialog, which, isChecked ->
+            checkedListItems[which] = isChecked
+            val currentItem = listItems[which]
+        }
+        mbuilder2.setPositiveButton("OK"){dialog, which ->
+            textView2.text = ""
+            for(i in checkedListItems.indices){
+                val checked = checkedListItems[i]
+                if (checked) {
+                    textView2.text = textView2.text.toString() + listItems[i] + "\n"
+                }
+            }
+        }
+        mbuilder2.setNeutralButton("Cancel"){ dialog, which ->
+            dialog.cancel()
+        }
+        val mDialog2 = mbuilder2.create()
+        button2.setOnClickListener {
+            mDialog2.show()
+        }
+
+    }
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginBottom="128dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/button2"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginBottom="32dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/button2"/>
+    <Button
+            android:text="Show Dialog Single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:layout_marginTop="222dp"
+            android:layout_marginBottom="222dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/button2"/>
+    <Button
+            android:text="Show Dialog Multiple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="239dp"/>
+
+</android.support.constraint.ConstraintLayout>
+
+
+
+-- Intents, Menu -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu?.add("Web")
+        menu?.add("Phone number")
+        return super.onCreateOptionsMenu(menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        var m_uri: Uri
+        var m_intent: Intent = Intent()
+        when (item?.toString()) {
+            "Web" -> {
+                m_uri = Uri.parse("https://www.apress.com")
+                m_intent = Intent(Intent.ACTION_VIEW, m_uri)
+            }
+            "Phone number" -> {
+                m_uri = Uri.parse("tel:639285083333")
+                m_intent = Intent(Intent.ACTION_DIAL, m_uri)
+            }
+        }
+        startActivity(m_intent)
+        return true
+    }
+}
+
+-- Services -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        button1.setOnClickListener {
+            startService(Intent(baseContext, MyService::class.java))
+        }
+
+        button2.setOnClickListener {
+            stopService(Intent(baseContext, MyService::class.java))
+        }
+    }
+}
+
+- MyService.kt
+class MyService : Service() {
+
+    override fun onBind(intent: Intent): IBinder? {
+        return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Toast.makeText(this, "MyService Started", Toast.LENGTH_LONG).show()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Toast.makeText(this, "MyService Destroyed", Toast.LENGTH_LONG).show()
+    }
+
+}
+
+
+
+-- Notification -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        button1.setOnClickListener {
+            val builder = NotificationCompat.Builder(this)
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/"))
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
+            builder.setSmallIcon(android.R.drawable.ic_dialog_alert)
+            builder.setContentIntent(pendingIntent)
+            builder.setContentTitle("Notifications Title")
+            builder.setContentText("Your notification content here.")
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(1, builder.build())
+        }
+    }
+}
+
+
+
+-- Broadcast Receiver --
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    lateinit var receiver: BroadcastReceiver
+    lateinit var context: Context
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        context = this
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_POWER_CONNECTED)
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED)
+        receiver = object:BroadcastReceiver(){
+            override fun onReceive(context: Context?, intent: Intent?) {
+                Toast.makeText(context, intent?.action, Toast.LENGTH_LONG).show()
+            }
+        }
+        registerReceiver(receiver, filter)
+
+        button.setOnClickListener {
+            sendBroadcast(Intent(context, MyReceiver::class.java))
+        }
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(receiver)
+        super.onDestroy()
+    }
+}
+
+- MyReceiver.kt
+class MyReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        // This method is called when the BroadcastReceiver is receiving an Intent broadcast.
+        Toast.makeText(context , "onReceive MyReceiver", Toast.LENGTH_LONG).show()
+    }
+}
+
+
+
+-- SQLite --
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val context = this
+        var db = DatabaseHelper(this)
+
+        btnInsert.setOnClickListener {
+            if(etvName.text.toString().isNotEmpty() && etvAge.text.toString().isNotEmpty()
+            ){
+                var user = User(etvName.text.toString(),  etvAge.text.toString().toInt())
+                db.insertData(user)
+            }
+            else{
+                Toast.makeText(context, "Please fill the fields", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        btnRead.setOnClickListener {
+            var data = db.readData()
+            tvResult.text = ""
+            for (i in 0..(data.size - 1)) {
+                tvResult.append(data.get(i).id.toString() + " " + data.get(i).name + " " + data.get(i).age + "\n")
+            }
+        }
+
+        btnUpdate.setOnClickListener {
+            db.updateData()
+            btnRead.performClick()
+        }
+
+        btnDelete.setOnClickListener {
+            db.deleteData()
+            btnRead.performClick()
+        }
+
+    }
+}
+
+- DatabaseHelper.kt
+val DATABASE_NAME = "MyDB"
+val TABLE_NAME = "Users"
+val COL_NAME = "name"
+val COL_AGE = "age"
+val COL_ID = "id"
+
+class DatabaseHelper(var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1){
+
+    override fun onCreate(db: SQLiteDatabase?) {
+
+        val createTable = "CREATE TABLE " + TABLE_NAME +" (" +
+                COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COL_NAME + " VARCHAR(256)," +
+                COL_AGE +" INTEGER)"
+
+        db?.execSQL(createTable)
+
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?,oldVersion: Int,newVersion: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun insertData(user : User){
+        val db = this.writableDatabase
+        var cv = ContentValues()
+        cv.put(COL_NAME,user.name)
+        cv.put(COL_AGE,user.age)
+        var result = db.insert(TABLE_NAME,null,cv)
+        if(result == -1.toLong())
+            Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(context,"Success",Toast.LENGTH_SHORT).show()
+    }
+
+    fun readData() : MutableList<User>{
+        var list: MutableList<User> = ArrayList()
+
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME"
+        val result = db.rawQuery(query, null)
+        if(result.moveToFirst()){
+            do {
+                var user = User()
+                user.id = result.getString(0).toInt()
+                user.name = result.getString(1)
+                user.age = result.getString(2).toInt()
+                list.add(user)
+            } while (result.moveToNext())
+        }
+        result.close()
+        db.close()
+
+        return list
+    }
+
+    fun deleteData(){
+        val db = this.writableDatabase
+        db.delete(TABLE_NAME,null,null)
+        db.close()
+    }
+
+    fun updateData() {
+        val db = this.writableDatabase
+        val query = "Select * from $TABLE_NAME"
+        val result = db.rawQuery(query,null)
+        if(result.moveToFirst()){
+            do {
+                var cv = ContentValues()
+                cv.put(COL_AGE,(result.getInt(result.getColumnIndex(COL_AGE))+1))
+                db.update(TABLE_NAME,cv, "$COL_ID=? AND $COL_NAME=?",
+                    arrayOf(result.getString(result.getColumnIndex(COL_ID)),
+                        result.getString(result.getColumnIndex(COL_NAME))))
+            }while (result.moveToNext())
+        }
+
+        result.close()
+        db.close()
+    }
+}
+
+- User.kt
+class User {
+
+    var id: Int = 0
+    var name: String = ""
+    var age: Int = 0
+
+    constructor(name: String, age: Int){
+        this.name = name
+        this.age = age
+    }
+
+    constructor(){}
+}
+
+
+
+-- Threads and Runnables --
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        button.setOnClickListener {
+            Thread(Runnable {
+                killSomeTime()
+            }).start()
+        }
+    }
+    private fun killSomeTime(){
+        for(i in 1..20){
+            runOnUiThread(Runnable {
+                textView.text = i.toString()
+            })
+            Thread.sleep(2000)
+        }
+    }
+}
+
+
+
+
+-- Handler Class -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    lateinit var mhandler: Handler
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        mhandler = object : Handler(){
+            override fun handleMessage(msg: Message?) {
+                textView.text = msg?.data?.getString("counter")
+            }
+        }
+
+        button.setOnClickListener {
+            Thread(Runnable {
+                killSomeTime()
+            }).start()
+        }
+    }
+
+    private fun killSomeTime(){
+        for(i in 1..20){
+            var msg = Message.obtain()
+            msg.data.putString("counter", i.toString())
+            mhandler.sendMessage(msg)
+            Thread.sleep(2000)
+        }
+    }
+}
+
+
+
+-- Async Task -- 
+-MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        button.setOnClickListener {
+            Worker().execute()
+        }
+    }
+
+    inner class Worker : AsyncTask<Void, String, Boolean>(){
+
+        override fun doInBackground(vararg params: Void?): Boolean {
+            for(i in 1..20){
+                publishProgress(i.toString())
+                Thread.sleep(2000)
+            }
+            return true
+        }
+
+        override fun onProgressUpdate(vararg values: String?) {
+            textView.text = values[0]
+        }
+
+        override fun onPostExecute(result: Boolean?) {
+            println("GG = $result")
+        }
+    }
+}
+
+
+
+-- AsyncTask 2 --
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    private var stringBuilder:StringBuilder?=null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        stringBuilder = StringBuilder("Async task Demonstration\n---------------------")
+        stringBuilder?.append("\nWaiting for Async Jobs to start\n")
+        statusText?.text = "${stringBuilder.toString()}"
+
+        btn_async.setOnClickListener {
+            MyAsyncTask().execute("Hello", "World")
+        }
+    }
+
+    inner class MyAsyncTask : AsyncTask<String, Int, Int>() {
+
+        override fun doInBackground(vararg params: String?): Int {
+            val count:Int = params.size
+            var index = 0
+            while(index < count){
+                Log.d("Kotlin","doInBackground task and Total parameter passed are :$count and processing $index with value: ${params[index]}")
+                publishProgress(index + 1)
+                Thread.sleep(1000)
+                index++
+            }
+            return count
+        }
+
+        override fun onProgressUpdate(vararg values: Int?) {
+            super.onProgressUpdate(*values)
+            if(values[0]!=null) {
+                progressBar?.progress = values[0] as Int
+                stringBuilder?.append("Published post called with ${values[0]}\n")
+                statusText?.text = stringBuilder.toString()
+            }
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            stringBuilder?.append("Async task started... \n In PreExecute Method \n")
+            statusText?.text = "${stringBuilder.toString()}"
+            progressBar?.visibility= View.VISIBLE
+            progressBar?.progress = 0
+            Log.d("Kotlin","On PreExecute Method")
+        }
+
+        override fun onPostExecute(result: Int?) {
+            super.onPostExecute(result)
+            stringBuilder?.append("Task Completed.\n")
+            statusText?.text = "${stringBuilder.toString()}"
+            Log.d("Kotlin","On Post Execute and size of String is:$result")
+        }
+    }
+}
+
+
+
+
+-- AsyncTask Image -- 
+class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_REQUEST = 10
+    private var permissions = arrayOf(Manifest.permission.INTERNET)
+    private var context: Context = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkPermission(context, permissions)) {
+                Toast.makeText(context, "Permission are already provided", Toast.LENGTH_SHORT).show()
+                DownloadTask(imageView,"http://www.google.com/logos/2013/estonia_independence_day_2013-1057005.3-hp.jpg" ).execute()
+            } else {
+                requestPermissions(permissions, PERMISSION_REQUEST)
+            }
+        }else{
+            Toast.makeText(context, "Permission are already provided", Toast.LENGTH_SHORT).show()
+            DownloadTask(imageView,"http://www.google.com/logos/2013/estonia_independence_day_2013-1057005.3-hp.jpg" ).execute()
+        }
+    }
+
+    private fun checkPermission(context: Context, permissionArray: Array<String>): Boolean {
+        var allSuccess = true
+        for (i in permissionArray.indices){
+            if(checkCallingOrSelfPermission(permissionArray[i]) == PackageManager.PERMISSION_DENIED)
+                allSuccess = false
+        }
+        return allSuccess
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == PERMISSION_REQUEST){
+            var allSuccess = true
+            for(i in permissions.indices){
+                if(grantResults[i] == PackageManager.PERMISSION_DENIED){
+                    allSuccess = false
+                    Toast.makeText(context,"Some Permissions Denied",Toast.LENGTH_SHORT).show()
+                }
+            }
+            if(allSuccess) {
+                Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
+                DownloadTask(
+                    imageView,
+                    "http://www.google.com/logos/2013/estonia_independence_day_2013-1057005.3-hp.jpg"
+                ).execute()
+            }
+        }
+    }
+
+    inner class DownloadTask(var bmImage: ImageView, var image_name: String) : AsyncTask<String, Void, Bitmap>() {
+        //var drawable: TextDrawable? = null
+
+        override fun doInBackground(vararg urls: String): Bitmap? {
+            val input = URL(image_name).openStream()
+            return BitmapFactory.decodeStream(input)
+        }
+
+        override fun onPostExecute(result: Bitmap?){
+            try {
+                bmImage.setImageBitmap(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+}
+
+
+-- Camera, Gallery, Audio, Video - Media API -- 
+- MainActivity.kt
+
+class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_CODE = 1000
+    private val IMAGE_CAPTURE_CODE = 1001
+    private val IMAGE_PICK_CODE = 1002;
+    var image_uri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        btnCapture.setOnClickListener {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if(checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
+                        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                    val permission = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    requestPermissions(permission, PERMISSION_CODE)
+                }
+                else {
+                    openCamera()
+                }
+            }
+            else {
+                openCamera()
+            }
+        }
+
+        btnPick.setOnClickListener {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                    val permission = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermissions(permission, PERMISSION_CODE)
+                }
+                else {
+                    pickFromGallery()
+                }
+            }
+            else {
+                pickFromGallery()
+            }
+        }
+		
+		//var surfaceHolder = surfaceView.holder // For video
+        var pauseFlag: Boolean = false
+        lateinit var player: MediaPlayer
+
+        btnPlay.setOnClickListener {
+            if(pauseFlag){
+                player.start()
+                pauseFlag = false
+            }
+            else{
+                player = MediaPlayer.create(this, R.raw.sam)
+				//player.setDisplay(surfaceHolder) // For video
+				//Also add surfaceView in xml
+                player.start()
+            }
+            Toast.makeText(this, "Audio Playing", Toast.LENGTH_LONG).show()
+        }
+
+        btnPause.setOnClickListener {
+            pauseFlag = true
+            player.pause()
+            Toast.makeText(this, "Audio Paused", Toast.LENGTH_LONG).show()
+        }
+
+        btnStop.setOnClickListener {
+            player.stop()
+            player.release()
+            Toast.makeText(this, "Audio Stopped", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openCamera() {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Pic")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the camera")
+        image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
+        startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE)
+    }
+
+    private fun pickFromGallery(){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode){
+            PERMISSION_CODE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && requestCode == IMAGE_CAPTURE_CODE){
+                    openCamera()
+                }
+                else if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && requestCode == IMAGE_PICK_CODE){
+                    pickFromGallery()
+                }
+                else{
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == Activity.RESULT_OK && requestCode == IMAGE_CAPTURE_CODE){
+            cameraImageView.setImageURI(image_uri)
+        }
+
+        if(resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+            galleryImageView.setImageURI(data?.data)
+        }
+    }
+
+}
+
+- AndroidManifest.xml
+<uses-permission android:name="android.permission.CAMERA"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+
+
+-- Telephone API -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_CODE = 1000
+    var details: String = ""
+    var strPhoneType : String = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val number = 9167100326
+        btnDial.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:+91 $number")
+            startActivity(intent)
+        }
+
+        btnPhone.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED) {
+                    val permission = arrayOf(Manifest.permission.READ_PHONE_STATE)
+                    requestPermissions(permission, PERMISSION_CODE)
+                } else {
+                    phoneData()
+                }
+            } else {
+                phoneData()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode){
+            PERMISSION_CODE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    phoneData()
+                }
+                else{
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun phoneData() {
+        var manager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        var phoneType = manager.phoneType
+        when(phoneType) {
+            TelephonyManager.PHONE_TYPE_CDMA -> {
+                strPhoneType = "CDMA"
+            }
+            TelephonyManager.PHONE_TYPE_GSM -> {
+                strPhoneType = "GSM"
+            }
+            TelephonyManager.PHONE_TYPE_NONE -> {
+                strPhoneType = "NONE"
+            }
+            TelephonyManager.PHONE_TYPE_SIP -> {
+                strPhoneType = "SIP"
+            }
+        }
+        try {
+            textView.text = "Phone Details:\n" +
+                    "Phone network type = $strPhoneType \n" +
+                    "IMEI Number = ${manager.getImei()} \n" +
+                    "SubscriberID = ${manager.subscriberId} \n" +
+                    "Sim serial number = ${manager.simSerialNumber} \n" +
+                    "Software version = ${manager.deviceSoftwareVersion} \n" +
+                    "In roaming? = ${manager.isNetworkRoaming}"
+        } catch (se: SecurityException) {
+            println(se.message)
+        }
+    }
+}
+
+- AndroidManifest.xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+
+
+-- Security and Permission -- 
+- MainActivity.kt
+class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_REQUEST = 10
+    private var permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
+    private lateinit var context: Context
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        btnPermission.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkPermission(context, permissions)) {
+                    Toast.makeText(context, "Permission are already provided", Toast.LENGTH_SHORT).show()
+                } else {
+                    requestPermissions(permissions, PERMISSION_REQUEST)
+                }
+            }else{
+                Toast.makeText(context, "Permission are already provided", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    private fun checkPermission(context: Context, permissionArray: Array<String>): Boolean {
+        var allSuccess = true
+        for (i in permissionArray.indices){
+            if(checkCallingOrSelfPermission(permissionArray[i]) == PackageManager.PERMISSION_DENIED)
+                allSuccess = false
+        }
+        return allSuccess
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == PERMISSION_REQUEST){
+            var allSuccess = true
+            for(i in permissions.indices){
+                if(grantResults[i] == PackageManager.PERMISSION_DENIED){
+                    allSuccess = false
+                    Toast.makeText(context,"Some Permissions Denied",Toast.LENGTH_SHORT).show()
+                }
+            }
+            if(allSuccess)
+                Toast.makeText(context,"Permissions Granted",Toast.LENGTH_SHORT).show()
+
+        }
+    }
+}
+
+- AndroidManifest.xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.CAMERA"/>
+
+
+
+-- Network Communications and Services (JSON) -- 
+- build.grade
+implementation 'com.android.support:design:27.1.1'
+implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+
+- AndroidManifest.xml
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+
+- ApiService.kt (Interface)
+import retrofit2.Call
+import retrofit2.http.GET
+
+interface ApiService {
+	@GET(".")
+	fun getFeeds(): Call<String>
+}
+
+- RecyclerAdapter.kt
+class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+
+	private var list = ArrayList<String>()
+
+	fun setItems(newList: ArrayList<String>){
+		this.list = newList
+		this.notifyDataSetChanged()
+	}
+
+	override fun getItemCount() = list.size
+
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+		val view = LayoutInflater.from(parent.context)
+				.inflate(android.R.layout.simple_list_item_1, parent, false)
+
+		return ViewHolder(view)
+	}
+
+	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+		holder.textView.text = list[position]
+	}
+
+	inner class ViewHolder(itemView: View?): RecyclerView.ViewHolder(itemView) {
+		var textView: TextView = itemView!!.findViewById(android.R.id.text1)
+	}
+
+}
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".MainActivity">
+
+	<android.support.v7.widget.RecyclerView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/recyclerView"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ImageView
+		android:id="@+id/imageView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:src="@drawable/no_internet_connection" />
+
+</android.support.constraint.ConstraintLayout>
+
+- MainActivity.kt
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
+import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.OkHttpClient
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
+
+class MainActivity : AppCompatActivity() {
+
+    private val arrayList = ArrayList<String>()
+    private val adapter = RecyclerAdapter()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://api.reddit.com/")
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .client(OkHttpClient.Builder().build())
+        .build()
+
+    private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val notConnected = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)
+            if (notConnected) {
+                disconnected()
+            } else {
+                connected()
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setupRecyclerView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(broadcastReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(broadcastReceiver)
+    }
+
+    private fun setupRecyclerView(){
+        with(recyclerView){
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+        }
+    }
+
+    private fun disconnected() {
+        recyclerView.visibility = View.INVISIBLE
+        imageView.visibility = View.VISIBLE
+    }
+
+    private fun connected() {
+        recyclerView.visibility = View.VISIBLE
+        imageView.visibility = View.INVISIBLE
+        fetchFeeds()
+    }
+
+    private fun fetchFeeds() {
+        retrofit.create(ApiService::class.java)
+            .getFeeds()
+            .enqueue(object : Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.e("MainActivityTag", t.message)
+                }
+
+                override fun onResponse(call: Call<String>?, response: Response<String>) {
+                    addTitleToList(response.body()!!)
+                }
+            })
+    }
+
+    private fun addTitleToList(response: String) {
+        val jsonObject = JSONObject(response).getJSONObject("data")
+        val children = jsonObject.getJSONArray("children")
+
+        for (i in 0..(children.length()-1)) {
+            val item = children.getJSONObject(i).getJSONObject("data").getString("title")
+            arrayList.add(item)
+            adapter.setItems(arrayList)
+        }
+    }
+}
+
+
+
+-- Calculator -- 
+- build.gradle
+implementation 'net.objecthunter:exp4j:0.4.8'
+
+- colors.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="actionButton">#F57C00</color>
+    <color name="numberButton">#455A64</color>
+</resources>
+
+- styles.xml
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="ActionButtonStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/actionButton</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">0.5dp</item>
+    </style>
+    <style name="NumberButtonStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/numberButton</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">0.5dp</item>
+    </style>
+</resources>
+
+- activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/black"
+              android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/tvExpression"
+            android:layout_width="match_parent"
+            android:layout_height="80sp"
+            android:ellipsize="start"
+            android:gravity="end"
+            android:singleLine="true"
+            android:textColor="@color/numberButton"
+            android:textSize="40sp" />
+
+    <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="100sp"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:singleLine="true"
+            android:textColor="@color/numberButton"
+            android:textSize="30sp" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/tvClear"
+                    style="@style/ActionButtonStyle"
+                    android:text="CE" />
+
+            <TextView
+                    android:id="@+id/tvOpen"
+                    style="@style/ActionButtonStyle"
+                    android:text="(" />
+
+            <TextView
+                    android:id="@+id/tvClose"
+                    style="@style/ActionButtonStyle"
+                    android:text=")" />
+
+            <TextView
+                    android:id="@+id/tvDivide"
+                    style="@style/ActionButtonStyle"
+                    android:text="/" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/tvSeven"
+                    style="@style/NumberButtonStyle"
+                    android:text="7" />
+
+            <TextView
+                    android:id="@+id/tvEight"
+                    style="@style/NumberButtonStyle"
+                    android:text="8" />
+
+            <TextView
+                    android:id="@+id/tvNine"
+                    style="@style/NumberButtonStyle"
+                    android:text="9" />
+
+            <TextView
+                    android:id="@+id/tvMul"
+                    style="@style/ActionButtonStyle"
+                    android:text="*" />
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+
+            <TextView
+                    android:id="@+id/tvFour"
+                    style="@style/NumberButtonStyle"
+                    android:text="4" />
+
+            <TextView
+                    android:id="@+id/tvFive"
+                    style="@style/NumberButtonStyle"
+                    android:text="5" />
+
+            <TextView
+                    android:id="@+id/tvSix"
+                    style="@style/NumberButtonStyle"
+                    android:text="6" />
+
+            <TextView
+                    android:id="@+id/tvMinus"
+                    style="@style/ActionButtonStyle"
+                    android:text="-" />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+
+            <TextView
+                    android:id="@+id/tvOne"
+                    style="@style/NumberButtonStyle"
+                    android:text="1" />
+
+            <TextView
+                    android:id="@+id/tvTwo"
+                    style="@style/NumberButtonStyle"
+                    android:text="2" />
+
+            <TextView
+                    android:id="@+id/tvThree"
+                    style="@style/NumberButtonStyle"
+                    android:text="3" />
+
+            <TextView
+                    android:id="@+id/tvPlus"
+                    style="@style/ActionButtonStyle"
+                    android:text="+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/tvDot"
+                    style="@style/NumberButtonStyle"
+                    android:text="." />
+
+            <TextView
+                    android:id="@+id/tvZero"
+                    style="@style/NumberButtonStyle"
+                    android:text="0" />
+
+            <ImageView
+                    android:id="@+id/tvBack"
+                    style="@style/NumberButtonStyle"
+                    android:scaleType="center"
+                    android:src="@drawable/backspace" />
+
+            <TextView
+                    android:id="@+id/tvEquals"
+                    style="@style/ActionButtonStyle"
+                    android:text="=" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+
+- MainActivity.kt
+package com.example.p14demo
+
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import kotlinx.android.synthetic.main.activity_main.*
+import net.objecthunter.exp4j.ExpressionBuilder
+
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        //Numbers
+        tvOne.setOnClickListener { appendOnExpresstion("1", true) }
+        tvTwo.setOnClickListener { appendOnExpresstion("2", true) }
+        tvThree.setOnClickListener { appendOnExpresstion("3", true) }
+        tvFour.setOnClickListener { appendOnExpresstion("4", true) }
+        tvFive.setOnClickListener { appendOnExpresstion("5", true) }
+        tvSix.setOnClickListener { appendOnExpresstion("6", true) }
+        tvSeven.setOnClickListener { appendOnExpresstion("7", true) }
+        tvEight.setOnClickListener { appendOnExpresstion("8", true) }
+        tvNine.setOnClickListener { appendOnExpresstion("9", true) }
+        tvZero.setOnClickListener { appendOnExpresstion("0", true) }
+        tvDot.setOnClickListener { appendOnExpresstion(".", true) }
+
+        //Operators
+        tvPlus.setOnClickListener { appendOnExpresstion("+", false) }
+        tvMinus.setOnClickListener { appendOnExpresstion("-", false) }
+        tvMul.setOnClickListener { appendOnExpresstion("*", false) }
+        tvDivide.setOnClickListener { appendOnExpresstion("/", false) }
+        tvOpen.setOnClickListener { appendOnExpresstion("(", false) }
+        tvClose.setOnClickListener { appendOnExpresstion(")", false) }
+
+        tvClear.setOnClickListener {
+            tvExpression.text = ""
+            tvResult.text = ""
+        }
+
+        tvBack.setOnClickListener {
+            val string = tvExpression.text.toString()
+            if(string.isNotEmpty()){
+                tvExpression.text = string.substring(0,string.length-1)
+            }
+            tvResult.text = ""
+        }
+
+        tvEquals.setOnClickListener {
+            try {
+                val expression = ExpressionBuilder(tvExpression.text.toString()).build()
+                val result = expression.evaluate()
+                val longResult = result.toLong()
+                if(result == longResult.toDouble())
+                    tvResult.text = longResult.toString()
+                else
+                    tvResult.text = result.toString()
+
+            }catch (e:Exception){
+                Log.d("Exception"," message : " + e.message )
+            }
+        }
+
+    }
+
+    private fun appendOnExpresstion(string: String, canClear: Boolean) {
+
+        if(tvResult.text.isNotEmpty()){
+            tvExpression.text = ""
+        }
+        if (canClear) {
+            tvResult.text = ""
+            tvExpression.append(string)
+        } else {
+            tvExpression.append(tvResult.text)
+            tvExpression.append(string)
+            tvResult.text = ""
+        }
+    }
+}
+
+*/
